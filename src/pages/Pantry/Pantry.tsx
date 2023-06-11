@@ -10,6 +10,7 @@ export const Pantry = () => {
   const [foods, setFoods] = useState<Food[]>();
 
   useEffect(() => {
+    //
     APIGetFoods().then((foods) => setFoods(foods));
   }, []);
 
