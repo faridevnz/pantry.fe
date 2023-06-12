@@ -11,6 +11,8 @@ export type Food = {
   };
 };
 
+const baseUri = import.meta.env.VITE_API_BASE_URL;
+
 export const APIGetFoods = async (): Promise<Food[]> => {
-  return (await axios.get<Food[]>("http://0.0.0.0:3333/foods")).data;
+  return (await axios.get<Food[]>(`${baseUri}/foods`)).data;
 };
