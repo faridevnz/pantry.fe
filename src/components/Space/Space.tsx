@@ -20,7 +20,7 @@ export const Space: FC<SapceProps> = (props) => {
   return props.type === "simple" ? (
     <>
       <div
-        className="border-dashed border-purple-300 border-[1px] bg-purple-50"
+        // className="border-dashed border-purple-300 border-[1px] bg-purple-50"
         style={{
           width: props.direction === "x" ? `${props.value}px` : "100%",
           height: props.direction === "y" ? `${props.value}px` : "100%",
