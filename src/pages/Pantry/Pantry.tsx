@@ -19,13 +19,16 @@ export const Pantry = () => {
       <PageWithNavigation>
         <Space type="simple" direction="y" value={14} />
         {/* header */}
-        <div className="w-full flex justify-end">
+        <div className="w-full flex justify-between items-end">
+          <span className="font-bold text-[38px] text-[#3E4954] leading-[38px]">
+            CIBO
+          </span>
           <Button variant="fill" icon={<PlusIcon />}>
             Crea
           </Button>
         </div>
         {/* content */}
-        <Space type="simple" direction="y" value={7} />
+        <Space type="simple" direction="y" value={28} />
         <Section label="VERDURA">
           {foods
             ?.filter((food) => food.category === "VERDURA")

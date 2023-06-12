@@ -7,7 +7,7 @@ export type IngredientCardProps = {
   expiration: Date;
   quantity: {
     unit: string;
-    value: string;
+    value: number;
   };
 };
 
@@ -52,9 +52,9 @@ export const IngredientCard: FC<IngredientCardProps> = (props) => {
       {/* boody */}
       <div className="w-full flex justify-between items-center">
         {/* left */}
-        <div className="flex justify-center items-center gap-[8px] pl-[8px] pr-[8px] pt-[2px] pb-[2px] bg-[#EEF2F6] rounded-[5px]">
+        <div className="flex items-center gap-[8px]">
           <span
-            className="w-[8px] h-[8px] rounded-full"
+            className="w-[4px] h-[14px]"
             style={{ backgroundColor: statusColorFromDate(props.expiration) }}
           ></span>
           <span className="font-medium text-[13px] text-[#3E4954]">

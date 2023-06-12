@@ -7,7 +7,7 @@ export type Food = {
   category: string;
   quantity: {
     unit: string;
-    value: string;
+    value: number;
   };
 };
 
