@@ -64,7 +64,8 @@ export const CreateFood: FC<CreateFoodProps> = ({ onClose }) => {
   };
 
   const onCreateFood = async () => {
-    await axios.post("http://localhost:3333/foods", form);
+    const baseUri = import.meta.env.VITE_API_BASE_URL;
+    await axios.post(`${baseUri}/foods`, form);
     onClose("success");
   };
 
