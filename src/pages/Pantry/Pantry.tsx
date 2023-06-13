@@ -6,18 +6,41 @@ import { Space } from "../../components/Space/Space";
 import { IngredientCard } from "../../components/IngredientCard/IngredientCard";
 import { APIGetFoods, Food } from "../../api/food";
 import { IngredientCardSkeleton } from "../../components/IngredientCard/skeleton/IngredientCardSkeleton";
+import { ModalController } from "../../layouts/ModalController/ModalController";
+import { CreateFood } from "./modals/CreateFood";
 
 export const Pantry = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [foods, setFoods] = useState<Food[]>();
+  const [categories, setCategories] = useState<string[]>([]);
+  const [mode, setMode] = useState<"CREATE" | "LIST" | "UPDATE">("LIST");
 
-  useEffect(() => {
-    //
+  const fetchFood = async () => {
     APIGetFoods().then((foods) => {
       setFoods(foods);
       setLoading(false);
     });
+  };
+
+  useEffect(() => {
+    //
+    fetchFood();
   }, []);
+
+  useEffect(() => {
+    foods?.forEach((food) => {
+      setCategories((prev) => {
+        return Array.from(new Set<string>(prev).add(food.category));
+      });
+    });
+  }, [foods]);
+
+  const onClose = (type: "success" | "close" | "error") => {
+    // fetch if success
+    if (type === "success") fetchFood();
+    // close modal
+    setMode("LIST");
+  };
 
   return (
     <>
@@ -28,60 +51,71 @@ export const Pantry = () => {
           <span className="font-bold text-[38px] text-[#3E4954] leading-[38px]">
             CIBO
           </span>
-          <Button variant="fill" icon={<PlusIcon />}>
+          <Button
+            variant="fill"
+            icon={<PlusIcon />}
+            onClick={() => setMode("CREATE")}
+          >
             Crea
           </Button>
         </div>
         {/* content */}
         <Space type="simple" direction="y" value={28} />
-        <Section label="VERDURA" loading={loading}>
-          {foods
-            ?.filter((food) => food.category === "VERDURA")
-            .map((food, index) => (
-              <IngredientCard
-                name={food.name}
-                icon={food.icon}
-                expiration={new Date(food.expiration)}
-                quantity={food.quantity}
-                key={index}
-              />
-            ))}
-          {loading && <IngredientCardSkeleton />}
-        </Section>
-        <Section label="CARNE" loading={loading}>
-          {foods
-            ?.filter((food) => food.category === "CARNE")
-            .map((food, index) => (
-              <IngredientCard
-                name={food.name}
-                icon={food.icon}
-                expiration={new Date(food.expiration)}
-                quantity={food.quantity}
-                key={index}
-              />
-            ))}
-          {loading && (
-            <>
-              <IngredientCardSkeleton />
-              <IngredientCardSkeleton />
-            </>
-          )}
-        </Section>
-        <Section label="FRUTTA" loading={loading}>
-          {foods
-            ?.filter((food) => food.category === "FRUTTA")
-            .map((food, index) => (
-              <IngredientCard
-                name={food.name}
-                icon={food.icon}
-                expiration={new Date(food.expiration)}
-                quantity={food.quantity}
-                key={index}
-              />
-            ))}
-          {/*  */}
-        </Section>
+
+        {loading && <Skeleton />}
+
+        {categories.map((category) => (
+          <Section label={category}>
+            {foods
+              ?.filter((food) => food.category === category)
+              .map((food, index) => (
+                <IngredientCard
+                  name={food.name}
+                  icon={food.icon}
+                  expiration={new Date(food.expiration)}
+                  quantity={food.quantity}
+                  key={index}
+                />
+              ))}
+          </Section>
+        ))}
       </PageWithNavigation>
+
+      {/* modals */}
+      <ModalController open={mode === "CREATE"}>
+        <CreateFood
+          onClose={(type: "success" | "close" | "error") => {
+            onClose(type);
+          }}
+        />
+      </ModalController>
+    </>
+  );
+};
+
+const Skeleton = () => {
+  return (
+    <>
+      {/* label */}
+      <div className="flex justify-start items-center">
+        <Space type="simple" direction="x" value={4} />
+        <TextSkeleton />
+      </div>
+      {/* content */}
+      <Space type="simple" direction="y" value={7} />
+      <IngredientCardSkeleton />
+      <Space type="simple" direction="y" value={14} />
+      {/* label */}
+      <div className="flex justify-start items-center">
+        <Space type="simple" direction="x" value={4} />
+        <TextSkeleton />
+      </div>
+      {/* content */}
+      <Space type="simple" direction="y" value={7} />
+      <IngredientCardSkeleton />
+      <Space type="simple" direction="y" value={7} />
+      <IngredientCardSkeleton />
+      <Space type="simple" direction="y" value={14} />
     </>
   );
 };
@@ -93,24 +127,18 @@ const TextSkeleton = () => {
 const Section = ({
   children,
   label,
-  loading,
 }: {
   children: ReactNode;
   label: string;
-  loading?: boolean;
 }) => {
   return (
     <>
       {/* label */}
       <div className="flex justify-start items-center">
         <Space type="simple" direction="x" value={4} />
-        {!loading ? (
-          <span className="uppercase text-[14px] font-bold text-[#566A7E]">
-            {label}
-          </span>
-        ) : (
-          <TextSkeleton />
-        )}
+        <span className="uppercase text-[14px] font-bold text-[#566A7E]">
+          {label}
+        </span>
       </div>
       {/* content */}
       <Space type="simple" direction="y" value={7} />
