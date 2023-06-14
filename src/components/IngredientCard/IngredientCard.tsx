@@ -61,6 +61,8 @@ export const IngredientCard: FC<IngredientCardProps> = (props) => {
             <span>
               {daysFromDate(props.expiration) < 0
                 ? `scaduto da ${daysFromDate(props.expiration) * -1}`
+                : daysFromDate(props.expiration) === 0
+                ? "scade oggi"
                 : `scade in ${daysFromDate(props.expiration)}
             ${daysFromDate(props.expiration) === 1 ? "giorno" : "giorni"}`}
             </span>

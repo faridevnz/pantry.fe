@@ -65,7 +65,7 @@ export const Pantry = () => {
         {loading && <Skeleton />}
 
         {categories.map((category) => (
-          <Section label={category}>
+          <Section label={category} key={category}>
             {foods
               ?.filter((food) => food.category === category)
               .map((food, index) => (

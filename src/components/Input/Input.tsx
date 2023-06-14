@@ -24,7 +24,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props) => {
         </span>
       </div>
       {/* space */}
-      <Space type="simple" direction="y" value={7} />
+      <Space type="simple" direction="y" value={4} />
       {/* input */}
       {/* <div className="w-full h-[38px] bg-white border-[1px] border-[#B8E3FF] rounded-[4px]"></div> */}
       {props.type === "icons" ? (

@@ -21,7 +21,7 @@ export const ModalController: FC<ModalControllerProps> = ({
       style={{ bottom: visible ? "0" : "-100svh" }}
     >
       <div className="w-full h-[94%] bg-[#F5F7F8] border-t-[1px] border-[#E0E5EA] flex justify-center items-center drop-shadow-[0px_-4px_50px_#00000010]">
-        {children}
+        {visible ? children : null}
       </div>
     </div>
   );
