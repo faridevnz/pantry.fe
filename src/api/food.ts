@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export type Food = {
+  id: string;
   name: string;
   icon: string;
   expiration: string;

@@ -7,6 +7,10 @@ import {
 } from "react";
 import { Space } from "../Space/Space";
 import classNames from "classnames";
+import { DeleteRowIcon } from "../../assets/icons/DeleteRowIcon";
+import { PlusIcon } from "../../assets/icons/PlusIcon";
+import { Button } from "../Button/Button";
+import { APIGetFoods, Food } from "../../api/food";
 
 export type InputProps = {
   label: string;
@@ -221,5 +225,163 @@ const InputIcons = ({
         )}
       </div>
     </>
+  );
+};
+
+export const InputFoodAutocomplete: FC<{
+  className?: string;
+  onUpdateItem: (items: { food_id: string; quantity: string }[]) => void;
+}> = ({ className, onUpdateItem }) => {
+  const [foods, setFoods] = useState<Food[]>([]);
+  const [choices, setChoices] = useState<
+    Array<{ icon: string; id: string; name: string; quantity: number }>
+  >([]);
+  const [ingredients, setIngredients] = useState<
+    Array<{ icon: string; id: string; name: string; quantity: number }>
+  >([]);
+  const [q, setQ] = useState<string>("");
+
+  useEffect(() => {
+    APIGetFoods().then((food) => setFoods(food));
+  }, []);
+
+  useEffect(() => {
+    console.log(choices);
+  }, [choices]);
+
+  useEffect(() => {
+    onUpdateItem(
+      ingredients.map((i) => {
+        return { food_id: i.id, quantity: String(i.quantity) };
+      })
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ingredients]);
+
+  const onUpdateQuery = (q: string) => {
+    setQ(q);
+  };
+
+  useEffect(() => {
+    setChoices(
+      q.length > 2
+        ? foods
+            .filter((food) => food.name.toLowerCase().includes(q.toLowerCase()))
+            .map((food) => ({
+              id: food.id,
+              icon: food.icon,
+              name: food.name,
+              quantity: 0,
+            }))
+        : []
+    );
+  }, [foods, q]);
+
+  const onAddIngredient = (id: string) => {
+    setIngredients((prev) => {
+      const food = foods.find((f) => f.id === id);
+      return [
+        ...prev,
+        {
+          id: id,
+          icon: food!.icon,
+          name: food!.name,
+          quantity: Number(food!.quantity),
+        },
+      ];
+    });
+  };
+
+  const updateIngredient = (id: string, data: (typeof ingredients)[number]) => {
+    setIngredients((prev) => [
+      ...prev.map((i) => {
+        return i.id === id ? { ...data } : i;
+      }),
+    ]);
+  };
+
+  return (
+    <div className={classNames("w-full flex flex-col h-auto", className)}>
+      {/* label */}
+      <div className="flex justify-between items-center">
+        <div className="flex">
+          <Space type="simple" direction="x" value={4} />
+          <span className="uppercase text-[14px] font-bold text-[#566A7E]">
+            ingredienti
+          </span>
+        </div>
+        <Button variant="fill" icon={<PlusIcon />} />
+      </div>
+      {/* space */}
+      <Space type="simple" direction="y" value={7} />
+      {/* input */}
+      <div className="w-auto h-auto flex flex-col gap-[4px]">
+        {/* ------------------------ */}
+        <Input
+          type="text"
+          label=""
+          value={q}
+          onChange={(event) => {
+            onUpdateQuery(event.target.value);
+          }}
+        />
+        <div className="w-full h-auto flex flex-col bg-white border-[2px] border-[#E0E5EA] rounded-[4px]">
+          {choices.map((choice) => (
+            <div
+              key={choice.id}
+              className="w-full flex items-center h-[38px] gap-[12px] px-[12px]"
+              onClick={() => {
+                onAddIngredient(choice.id);
+                onUpdateQuery("");
+              }}
+            >
+              <span className="text-[18px]">{choice.icon}</span>
+              <span className="text-[16px] text-[#3E4954] font-semibold">
+                {choice.name}
+              </span>
+            </div>
+          ))}
+        </div>
+        {ingredients.map((ingredient) => (
+          <AutocompleteFoodCard
+            key={ingredient.id}
+            icon={ingredient.icon}
+            name={ingredient.name}
+            quantity={ingredient.quantity}
+            onUpdateQuantity={(quantity) => {
+              updateIngredient(ingredient.id, { ...ingredient, quantity });
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+const AutocompleteFoodCard: FC<{
+  icon: string;
+  name: string;
+  quantity: number;
+  onUpdateQuantity: (quantity: number) => void;
+}> = ({ icon, name, quantity, onUpdateQuantity }) => {
+  return (
+    <div className="w-full flex items-center px-[16px] bg-white border-[2px] border-[#E0E5EA] rounded-[4px] h-[44px]">
+      <div className="flex w-full justify-between">
+        {/* left */}
+        <div className="flex items-center gap-[12px]">
+          <div className="flex">{icon}</div>
+          <div className="text-[#3E4954] text-[14px] font-semibold">{name}</div>
+        </div>
+        {/* right */}
+        <div className="flex justify-between">
+          <input
+            type="number"
+            value={quantity}
+            className="w-[60px] border-[2px] border-[#E0E5EA] rounded-[4px] px-[6px] mr-[8px]"
+            onChange={(event) => onUpdateQuantity(Number(event.target.value))}
+          />
+          <DeleteRowIcon />
+        </div>
+      </div>
+    </div>
   );
 };

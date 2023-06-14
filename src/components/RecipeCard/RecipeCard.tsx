@@ -8,7 +8,7 @@ import { FireIcon } from "../../assets/icons/FireIcon";
 export type RecipeCardProps = {
   name: string;
   description: string;
-  difficulty: "FACILE" | "DIFFICILE" | "MEDIO";
+  difficulty: "F" | "D" | "M";
   category: string;
   time: number;
   nutritional_values: {
@@ -30,10 +30,10 @@ export type RecipeCardProps = {
 export const RecipeCard: FC<RecipeCardProps> = (props) => {
   const difficultyColor = (difficulty: Recipe["difficulty"]) => {
     // compute color
-    if (difficulty === "DIFFICILE") {
+    if (difficulty === "D") {
       return "#F25700"; // red
     }
-    if (difficulty === "MEDIO") {
+    if (difficulty === "M") {
       return "#F2BD00"; // orange
     }
     return "#88F200"; // yellow-green
@@ -112,7 +112,11 @@ export const RecipeCard: FC<RecipeCardProps> = (props) => {
               style={{ backgroundColor: difficultyColor(props.difficulty) }}
             ></span>
             <span className="font-medium text-[14px] text-[#3E4954]">
-              {props.difficulty}
+              {props.difficulty === "F"
+                ? "FACILE"
+                : props.difficulty === "D"
+                ? "DIFFICILE"
+                : "MEDIO"}
             </span>
             {/* separator */}
             <div className="w-[1px] h-[17px] bg-[#D9D9D9]"></div>

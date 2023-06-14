@@ -5,15 +5,52 @@ import { PageWithNavigation } from "../../layouts/PageWithNavigation/PageWithNav
 import { Space } from "../../components/Space/Space";
 import { IngredientCard } from "../../components/IngredientCard/IngredientCard";
 import { APIGetFoods, Food } from "../../api/food";
-import { IngredientCardSkeleton } from "../../components/IngredientCard/skeleton/IngredientCardSkeleton";
 import { ModalController } from "../../layouts/ModalController/ModalController";
 import { CreateFood } from "./modals/CreateFood";
+import { Html5Qrcode } from "html5-qrcode";
+import axios from "axios";
+import { IngredientCardSkeleton } from "../../components/IngredientCard/skeleton/IngredientCardSkeleton";
 
 export const Pantry = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [foods, setFoods] = useState<Food[]>();
   const [categories, setCategories] = useState<string[]>([]);
-  const [mode, setMode] = useState<"CREATE" | "LIST" | "UPDATE">("LIST");
+  const [mode, setMode] = useState<"CREATE" | "LIST" | "UPDATE" | "SCANNING">(
+    "LIST"
+  );
+  // init qr code reader
+  let html5Qrcode: Html5Qrcode | null = null;
+
+  const onScannCode = (code: string) => {
+    // stop scanning
+    html5Qrcode?.stop();
+    // fetch nutritional data
+    axios
+      .get(`https://world.openfoodfacts.org/api/v3/product/${code}`)
+      .then((res) => console.log(res.data.product.nutriments));
+    // destroy camera node
+    setMode("LIST");
+  };
+
+  const start_scanner = () => {
+    setMode("SCANNING");
+    Html5Qrcode.getCameras().then((cameras) => {
+      const camera_id = cameras[0].id;
+      html5Qrcode = new Html5Qrcode("qr-reader", {
+        verbose: true,
+        useBarCodeDetectorIfSupported: true,
+        experimentalFeatures: {
+          useBarCodeDetectorIfSupported: true,
+        },
+      });
+      html5Qrcode?.start(
+        camera_id,
+        { fps: 60, qrbox: 350, aspectRatio: 0.65 },
+        onScannCode,
+        () => null
+      );
+    });
+  };
 
   const fetchFood = async () => {
     APIGetFoods().then((foods) => {
@@ -51,13 +88,18 @@ export const Pantry = () => {
           <span className="font-bold text-[38px] text-[#3E4954] leading-[38px]">
             CIBO
           </span>
-          <Button
-            variant="fill"
-            icon={<PlusIcon />}
-            onClick={() => setMode("CREATE")}
-          >
-            Crea
-          </Button>
+          <div className="flex gap-[6px]">
+            <Button id="btn" variant="fill" onClick={start_scanner}>
+              Scann
+            </Button>
+            <Button
+              variant="fill"
+              icon={<PlusIcon />}
+              onClick={() => setMode("CREATE")}
+            >
+              Crea
+            </Button>
+          </div>
         </div>
         {/* content */}
         <Space type="simple" direction="y" value={28} />
@@ -88,6 +130,9 @@ export const Pantry = () => {
             onClose(type);
           }}
         />
+      </ModalController>
+      <ModalController open={mode === "SCANNING"}>
+        <div id="qr-reader" className="w-full h-[100%]"></div>
       </ModalController>
     </>
   );

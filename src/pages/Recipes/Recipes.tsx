@@ -1,14 +1,48 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { PlusIcon } from "../../assets/icons/PlusIcon";
 import { Button } from "../../components/Button/Button";
 import { PageWithNavigation } from "../../layouts/PageWithNavigation/PageWithNavigation";
 import { Space } from "../../components/Space/Space";
-import { Recipe } from "../../api/recipe";
-import { recipes as recipes_mock } from "../../components/RecipeCard/mock/recipes";
+import { APIGetRecipes, Recipe } from "../../api/recipe";
 import { RecipeCard } from "../../components/RecipeCard/RecipeCard";
+import { ModalController } from "../../layouts/ModalController/ModalController";
+import { CreateRecipe } from "./modals/CreateRecipe";
 
 export const Recipes = () => {
-  const [recipes] = useState<Recipe[]>(recipes_mock);
+  const [recipes, setRecipes] = useState<Recipe[]>();
+  const [mode, setMode] = useState<"CREATE" | "LIST" | "UPDATE">("LIST");
+  const [categories, setCategories] = useState<string[]>([]);
+
+  useEffect(() => {
+    recipes?.forEach((recipe) => {
+      setCategories((prev) => {
+        console.log(
+          "SETTING CATEGORIES from",
+          recipes,
+          "TO",
+          Array.from(new Set<string>(prev).add(recipe.category))
+        );
+        return Array.from(new Set<string>(prev).add(recipe.category));
+      });
+    });
+  }, [recipes]);
+
+  const fetchRecipes = () => {
+    APIGetRecipes()
+      .then((recipes) => setRecipes(recipes))
+      .catch((err) => console.error("ERR", err));
+  };
+
+  useEffect(() => {
+    fetchRecipes();
+  }, []);
+
+  const onClose = (type: "success" | "close" | "error") => {
+    // fetch if success
+    if (type === "success") fetchRecipes();
+    // close modal
+    setMode("LIST");
+  };
 
   return (
     <>
@@ -19,64 +53,45 @@ export const Recipes = () => {
           <span className="font-bold text-[38px] text-[#3E4954] leading-[38px]">
             RICETTE
           </span>
-          <Button variant="fill" icon={<PlusIcon />}>
+          <Button
+            variant="fill"
+            icon={<PlusIcon />}
+            onClick={() => setMode("CREATE")}
+          >
             Crea
           </Button>
         </div>
         {/* content */}
         <Space type="simple" direction="y" value={28} />
-        <Section label="COLAZIONE">
-          {recipes
-            ?.filter((recipe) => recipe.category === "COLAZIONE")
-            .map((recipe, index) => (
-              <RecipeCard
-                key={index}
-                name={recipe.name}
-                category={recipe.category}
-                description={recipe.description}
-                difficulty={recipe.difficulty}
-                food={recipe.food}
-                nutritional_values={recipe.nutritional_values}
-                time={recipe.time}
-              />
-            ))}
-          {/*  */}
-        </Section>
-        <Section label="PASTI">
-          {recipes
-            ?.filter((recipe) => recipe.category === "PASTI")
-            .map((recipe, index) => (
-              <RecipeCard
-                key={index}
-                name={recipe.name}
-                category={recipe.category}
-                description={recipe.description}
-                difficulty={recipe.difficulty}
-                food={recipe.food}
-                nutritional_values={recipe.nutritional_values}
-                time={recipe.time}
-              />
-            ))}
-          {/*  */}
-        </Section>
-        <Section label="DOLCI">
-          {recipes
-            ?.filter((recipe) => recipe.category === "DOLCI")
-            .map((recipe, index) => (
-              <RecipeCard
-                key={index}
-                name={recipe.name}
-                category={recipe.category}
-                description={recipe.description}
-                difficulty={recipe.difficulty}
-                food={recipe.food}
-                nutritional_values={recipe.nutritional_values}
-                time={recipe.time}
-              />
-            ))}
-          {/*  */}
-        </Section>
+
+        {categories.map((category) => (
+          <Section label={category} key={category}>
+            {recipes
+              ?.filter((recipe) => recipe.category === category)
+              .map((recipe, index) => (
+                <RecipeCard
+                  key={index}
+                  name={recipe.name}
+                  category={recipe.category}
+                  description={recipe.description}
+                  difficulty={recipe.difficulty}
+                  food={recipe.food}
+                  nutritional_values={recipe.nutritional_values}
+                  time={recipe.time}
+                />
+              ))}
+          </Section>
+        ))}
       </PageWithNavigation>
+
+      {/* modals */}
+      <ModalController open={mode === "CREATE"}>
+        <CreateRecipe
+          onClose={(type: "success" | "close" | "error") => {
+            onClose(type);
+          }}
+        />
+      </ModalController>
     </>
   );
 };
