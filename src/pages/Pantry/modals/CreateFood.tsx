@@ -4,6 +4,7 @@ import { Space } from "../../../components/Space/Space";
 import { Input, InputChips } from "../../../components/Input/Input";
 import { PlusIcon } from "../../../assets/icons/PlusIcon";
 import axios from "axios";
+import { useSearchParams } from "react-router-dom";
 
 type CreateFoodProps = {
   onClose: (type: "success" | "close" | "error") => void;
@@ -24,6 +25,8 @@ type Form = {
 };
 
 export const CreateFood: FC<CreateFoodProps> = ({ onClose }) => {
+  const [searchParams, _] = useSearchParams();
+
   const isoStringToGlobalDate = (iso: string) => {
     const date = new Date(iso);
     return date.toLocaleDateString().split("/").reverse().join("-");
@@ -44,6 +47,16 @@ export const CreateFood: FC<CreateFoodProps> = ({ onClose }) => {
     fats: "",
     expiration: isoStringToGlobalDate(new Date().toISOString()),
   });
+
+  useEffect(() => {
+    update("proteins", String(Math.floor(Number(searchParams.get("p") ?? ""))));
+    update(
+      "carbohydrates",
+      String(Math.floor(Number(searchParams.get("c") ?? "")))
+    );
+    update("fats", String(Math.floor(Number(searchParams.get("f") ?? ""))));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   useEffect(() => {
     setForm((prev) => ({

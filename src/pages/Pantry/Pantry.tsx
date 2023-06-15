@@ -7,9 +7,10 @@ import { IngredientCard } from "../../components/IngredientCard/IngredientCard";
 import { APIGetFoods, Food } from "../../api/food";
 import { ModalController } from "../../layouts/ModalController/ModalController";
 import { CreateFood } from "./modals/CreateFood";
-import { Html5Qrcode } from "html5-qrcode";
 import axios from "axios";
 import { IngredientCardSkeleton } from "../../components/IngredientCard/skeleton/IngredientCardSkeleton";
+import { useSearchParams } from "react-router-dom";
+import { BarcodeScanner } from "../../components/BarcodeScanner/BarcodeScanner";
 
 export const Pantry = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -18,38 +19,25 @@ export const Pantry = () => {
   const [mode, setMode] = useState<"CREATE" | "LIST" | "UPDATE" | "SCANNING">(
     "LIST"
   );
-  // init qr code reader
-  let html5Qrcode: Html5Qrcode | null = null;
+  const [_, setSearchParams] = useSearchParams();
 
   const onScannCode = (code: string) => {
-    // stop scanning
-    html5Qrcode?.stop();
     // fetch nutritional data
     axios
       .get(`https://world.openfoodfacts.org/api/v3/product/${code}`)
-      .then((res) => console.log(res.data.product.nutriments));
+      .then((res) => {
+        const nutriments = res.data.product.nutriments;
+        if (nutriments) {
+          setSearchParams({
+            c: nutriments.carbohydrates_100g,
+            p: nutriments.proteins_100g,
+            f: nutriments.fat_100g,
+          });
+          setMode("CREATE");
+        }
+      });
     // destroy camera node
     setMode("LIST");
-  };
-
-  const start_scanner = () => {
-    setMode("SCANNING");
-    Html5Qrcode.getCameras().then((cameras) => {
-      const camera_id = cameras[0].id;
-      html5Qrcode = new Html5Qrcode("qr-reader", {
-        verbose: true,
-        useBarCodeDetectorIfSupported: true,
-        experimentalFeatures: {
-          useBarCodeDetectorIfSupported: true,
-        },
-      });
-      html5Qrcode?.start(
-        camera_id,
-        { fps: 60, qrbox: 350, aspectRatio: 0.65 },
-        onScannCode,
-        () => null
-      );
-    });
   };
 
   const fetchFood = async () => {
@@ -60,7 +48,6 @@ export const Pantry = () => {
   };
 
   useEffect(() => {
-    //
     fetchFood();
   }, []);
 
@@ -89,7 +76,7 @@ export const Pantry = () => {
             CIBO
           </span>
           <div className="flex gap-[6px]">
-            <Button id="btn" variant="fill" onClick={start_scanner}>
+            <Button id="btn" variant="fill" onClick={() => setMode("SCANNING")}>
               Scann
             </Button>
             <Button
@@ -131,8 +118,26 @@ export const Pantry = () => {
           }}
         />
       </ModalController>
-      <ModalController open={mode === "SCANNING"}>
-        <div id="qr-reader" className="w-full h-[100%]"></div>
+      <ModalController
+        open={mode === "SCANNING"}
+        kill={true}
+        className="h-max pb-[100px]"
+      >
+        <div className="w-full flex flex-col p-[20px]">
+          {/* CONTENT */}
+          <Space type="simple" direction="y" value={28} />
+          {/* header */}
+          <div className="w-full flex justify-between items-end">
+            <span className="font-bold text-[38px] text-[#3E4954] leading-[38px]">
+              QR
+            </span>
+            <Button variant="link" onClick={() => onClose("close")}>
+              Chiudi
+            </Button>
+          </div>
+          <Space type="simple" direction="y" value={28} />
+          <BarcodeScanner onScann={onScannCode} />
+        </div>
       </ModalController>
     </>
   );
