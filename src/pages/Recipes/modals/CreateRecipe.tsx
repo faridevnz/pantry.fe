@@ -1,6 +1,5 @@
 import { FC, useState } from "react";
-import { Button } from "../../../components/Button/Button";
-import { Space } from "../../../components/Space/Space";
+import { Space } from "../../../components/atoms/Space/Space";
 import {
   Input,
   InputChips,
@@ -8,6 +7,8 @@ import {
 } from "../../../components/Input/Input";
 import { PlusIcon } from "../../../assets/icons/PlusIcon";
 import axios from "axios";
+import { IconButton } from "../../../components/molecules/IconButton/IconButton";
+import { Button } from "../../../components/atoms/Button/Button";
 
 type CreateRecipeProps = {
   onClose: (type: "success" | "close" | "error") => void;
@@ -107,13 +108,13 @@ export const CreateRecipe: FC<CreateRecipeProps> = ({ onClose }) => {
       {/* actions */}
       <Space type="simple" direction="y" value={28} />
       <div className="flex justify-end">
-        <Button
+        <IconButton
           variant="fill"
           icon={<PlusIcon />}
           onClick={() => onCreateRecipe()}
         >
           Create
-        </Button>
+        </IconButton>
       </div>
       <Space type="simple" direction="y" value={28} />
     </div>

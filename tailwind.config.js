@@ -2,7 +2,14 @@
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      keyframes: {
+        "slide-down": {
+          "0%": { top: "-100px" },
+          "100%": { top: "12px" },
+        },
+      },
+    },
   },
   plugins: [],
 };

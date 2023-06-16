@@ -6,6 +6,7 @@ export interface ProgressBarProps {
 }
 
 export const ProgressBar: FC<ProgressBarProps> = ({ progress }) => {
+  // template
   return (
     <div className="w-full bg-[#E0E5EA] h-[8px] rounded-[4px] relative">
       <div

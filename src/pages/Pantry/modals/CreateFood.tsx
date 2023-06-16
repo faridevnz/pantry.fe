@@ -1,10 +1,11 @@
 import { FC, useEffect, useState } from "react";
-import { Button } from "../../../components/Button/Button";
-import { Space } from "../../../components/Space/Space";
+import { Space } from "../../../components/atoms/Space/Space";
 import { Input, InputChips } from "../../../components/Input/Input";
 import { PlusIcon } from "../../../assets/icons/PlusIcon";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
+import { Button } from "../../../components/atoms/Button/Button";
+import { IconButton } from "../../../components/molecules/IconButton/IconButton";
 
 type CreateFoodProps = {
   onClose: (type: "success" | "close" | "error") => void;
@@ -188,16 +189,13 @@ export const CreateFood: FC<CreateFoodProps> = ({ onClose }) => {
       {/* actions */}
       <Space type="simple" direction="y" value={28} />
       <div className="flex justify-end gap-[10px]">
-        <Button variant="fill" disabled>
-          Scan
-        </Button>
-        <Button
+        <IconButton
           variant="fill"
           icon={<PlusIcon />}
           onClick={() => onCreateFood()}
         >
           Create
-        </Button>
+        </IconButton>
       </div>
       <Space type="simple" direction="y" value={28} />
     </div>

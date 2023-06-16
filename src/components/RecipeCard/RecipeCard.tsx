@@ -1,9 +1,9 @@
 import { FC } from "react";
 import { MenuIcon } from "../../assets/icons/MenuIcon";
-import { Recipe } from "../../api/recipe";
 import { CartIcon } from "../../assets/icons/CartIcon";
 import { ClockIcon } from "../../assets/icons/ClockIcon";
 import { FireIcon } from "../../assets/icons/FireIcon";
+import { Recipe } from "../../model/model";
 
 export type RecipeCardProps = {
   name: string;

@@ -8,6 +8,6 @@ export const PlusIcon = (props: SVGAttributes<HTMLOrSVGElement>) => (
     fill="none"
     {...props}
   >
-    <path fill="#fff" d="M14 8H8v6H6V8H0V6h6V0h2v6h6v2Z" />
+    <path fill="currentColor" d="M14 8H8v6H6V8H0V6h6V0h2v6h6v2Z" />
   </svg>
 );

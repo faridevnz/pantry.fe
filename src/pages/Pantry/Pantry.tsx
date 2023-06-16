@@ -1,16 +1,18 @@
 import { ReactNode, useEffect, useState } from "react";
 import { PlusIcon } from "../../assets/icons/PlusIcon";
-import { Button } from "../../components/Button/Button";
 import { PageWithNavigation } from "../../layouts/PageWithNavigation/PageWithNavigation";
-import { Space } from "../../components/Space/Space";
+import { Space } from "../../components/atoms/Space/Space";
 import { IngredientCard } from "../../components/IngredientCard/IngredientCard";
-import { APIGetFoods, Food } from "../../api/food";
 import { ModalController } from "../../layouts/ModalController/ModalController";
 import { CreateFood } from "./modals/CreateFood";
 import axios from "axios";
 import { IngredientCardSkeleton } from "../../components/IngredientCard/skeleton/IngredientCardSkeleton";
 import { useSearchParams } from "react-router-dom";
 import { BarcodeScanner } from "../../components/BarcodeScanner/BarcodeScanner";
+import { Food } from "../../model/model";
+import { APIGetFoods } from "../../api/food/food.api";
+import { Button } from "../../components/atoms/Button/Button";
+import { IconButton } from "../../components/molecules/IconButton/IconButton";
 
 export const Pantry = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -76,16 +78,16 @@ export const Pantry = () => {
             CIBO
           </span>
           <div className="flex gap-[6px]">
-            <Button id="btn" variant="fill" onClick={() => setMode("SCANNING")}>
+            <Button variant="fill" onClick={() => setMode("SCANNING")}>
               Scann
             </Button>
-            <Button
+            <IconButton
               variant="fill"
               icon={<PlusIcon />}
               onClick={() => setMode("CREATE")}
             >
               Crea
-            </Button>
+            </IconButton>
           </div>
         </div>
         {/* content */}

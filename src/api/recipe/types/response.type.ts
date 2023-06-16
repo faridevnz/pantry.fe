@@ -1,6 +1,4 @@
-import axios from "axios";
-
-export type Recipe = {
+export type RecipeResponseDTO = {
   name: string;
   description: string;
   difficulty: "F" | "D" | "M";
@@ -20,10 +18,4 @@ export type Recipe = {
       count: number;
     };
   };
-};
-
-const baseUri = import.meta.env.VITE_API_BASE_URL;
-
-export const APIGetRecipes = async (): Promise<Recipe[]> => {
-  return (await axios.get<Recipe[]>(`${baseUri}/recipes`)).data;
 };

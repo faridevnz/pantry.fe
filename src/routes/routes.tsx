@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { SplashScreen } from "../pages/SplashScreen/SplashScreen";
 import { Pantry } from "../pages/Pantry/Pantry";
 import { Recipes } from "../pages/Recipes/Recipes";
+import { Demo } from "../pages/Demo/Demo";
 
 export const routes = createBrowserRouter([
   {
@@ -15,5 +16,9 @@ export const routes = createBrowserRouter([
   {
     path: "/recipes",
     element: <Recipes />,
+  },
+  {
+    path: "/demo",
+    element: <Demo />,
   },
 ]);

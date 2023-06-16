@@ -1,12 +1,13 @@
 import { ReactNode, useEffect, useState } from "react";
 import { PlusIcon } from "../../assets/icons/PlusIcon";
-import { Button } from "../../components/Button/Button";
 import { PageWithNavigation } from "../../layouts/PageWithNavigation/PageWithNavigation";
-import { Space } from "../../components/Space/Space";
-import { APIGetRecipes, Recipe } from "../../api/recipe";
+import { Space } from "../../components/atoms/Space/Space";
 import { RecipeCard } from "../../components/RecipeCard/RecipeCard";
 import { ModalController } from "../../layouts/ModalController/ModalController";
 import { CreateRecipe } from "./modals/CreateRecipe";
+import { Recipe } from "../../model/model";
+import { APIGetRecipes } from "../../api/recipe/recipe.api";
+import { IconButton } from "../../components/molecules/IconButton/IconButton";
 
 export const Recipes = () => {
   const [recipes, setRecipes] = useState<Recipe[]>();
@@ -53,13 +54,13 @@ export const Recipes = () => {
           <span className="font-bold text-[38px] text-[#3E4954] leading-[38px]">
             RICETTE
           </span>
-          <Button
+          <IconButton
             variant="fill"
             icon={<PlusIcon />}
             onClick={() => setMode("CREATE")}
           >
             Crea
-          </Button>
+          </IconButton>
         </div>
         {/* content */}
         <Space type="simple" direction="y" value={28} />

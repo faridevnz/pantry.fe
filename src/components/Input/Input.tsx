@@ -5,12 +5,11 @@ import {
   useEffect,
   useState,
 } from "react";
-import { Space } from "../Space/Space";
+import { Space } from "../atoms/Space/Space";
 import classNames from "classnames";
 import { DeleteRowIcon } from "../../assets/icons/DeleteRowIcon";
-import { PlusIcon } from "../../assets/icons/PlusIcon";
-import { Button } from "../Button/Button";
-import { APIGetFoods, Food } from "../../api/food";
+import { Food } from "../../model/model";
+import { APIGetFoods } from "../../api/food/food.api";
 
 export type InputProps = {
   label: string;
@@ -310,7 +309,6 @@ export const InputFoodAutocomplete: FC<{
             ingredienti
           </span>
         </div>
-        <Button variant="fill" icon={<PlusIcon />} />
       </div>
       {/* space */}
       <Space type="simple" direction="y" value={7} />

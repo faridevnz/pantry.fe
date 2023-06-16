@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { ProgressBar } from "../../components/ProgressBar/ProgressBar";
-import { Space } from "../../components/Space/Space";
+import { ProgressBar } from "../../components/atoms/ProgressBar/ProgressBar";
+import { Space } from "../../components/atoms/Space/Space";
 import { useNavigate } from "react-router-dom";
 
 export const SplashScreen = () => {

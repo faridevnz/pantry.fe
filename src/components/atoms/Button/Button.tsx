@@ -1,16 +1,15 @@
 import classNames from "classnames";
-import { ButtonHTMLAttributes, ReactNode, forwardRef } from "react";
+import { ButtonHTMLAttributes, forwardRef } from "react";
 
 export type ButtonProps = {
   variant: "fill" | "link";
-  icon?: ReactNode;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props) => {
   //
   const fill = "bg-[#0099FF] text-white";
   const link = "bg-none underline text-[#0099FF]";
-
+  // template
   return (
     <>
       <button
@@ -21,7 +20,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props) => {
           props.className
         )}
       >
-        {props.icon && <span>{props.icon}</span>}
         {props.children}
       </button>
     </>

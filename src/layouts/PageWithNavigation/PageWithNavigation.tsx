@@ -1,5 +1,5 @@
 import { FC, ReactNode } from "react";
-import { Navigation } from "../../components/Navigation/Navigation";
+import { Navigation } from "../../components/molecules/Navigation/Navigation";
 
 export interface PageWithNavigation {
   children: ReactNode;
