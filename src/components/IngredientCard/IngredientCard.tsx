@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { MenuIcon } from "../../assets/icons/MenuIcon";
 
 export type IngredientCardProps = {
@@ -9,9 +9,16 @@ export type IngredientCardProps = {
     unit: string;
     value: number;
   };
+  // callbacks
+  onDelete: () => void;
+  onUpdate: () => void;
 };
 
 export const IngredientCard: FC<IngredientCardProps> = (props) => {
+  //
+
+  const [menu, setMenu] = useState<boolean>(false);
+
   const daysFromDate = (date: Date) => {
     const diff = date.getTime() - new Date().getTime(); // millis
     return Math.floor(diff / 1000 / 60 / 60 / 24); // in days
@@ -32,8 +39,34 @@ export const IngredientCard: FC<IngredientCardProps> = (props) => {
     return "#10C700";
   };
 
+  const onOpenMenu = (
+    event: React.MouseEvent<HTMLOrSVGElement, MouseEvent>
+  ) => {
+    event.stopPropagation();
+    setMenu(true);
+  };
+
+  const onDeleteClicked = (
+    event: React.MouseEvent<HTMLSpanElement, MouseEvent>
+  ) => {
+    event.stopPropagation();
+    setMenu(false);
+    props.onDelete();
+  };
+
+  const onUpdateClicked = (
+    event: React.MouseEvent<HTMLSpanElement, MouseEvent>
+  ) => {
+    event.stopPropagation();
+    setMenu(false);
+    props.onUpdate();
+  };
+
   return (
-    <div className="flex flex-col gap-[15px] p-[16px] justify-start items-center bg-white rounded-[10px] border-[1px] border-[#E0E5EA]">
+    <div
+      className="flex flex-col gap-[15px] p-[16px] justify-start items-center bg-white rounded-[10px] border-[1px] border-[#E0E5EA]"
+      onClick={() => setMenu(false)}
+    >
       {/* header */}
       <div className="w-full flex justify-between items-center">
         {/* left */}
@@ -44,10 +77,28 @@ export const IngredientCard: FC<IngredientCardProps> = (props) => {
           </span>
         </div>
         {/* right */}
-        <MenuIcon />
+        <MenuIcon onClick={(event) => onOpenMenu(event)} />
       </div>
       {/* separator */}
-      <div className="w-full border-t-[1px] border-[#E0E5EA] h-0"></div>
+      <div className="w-full border-t-[1px] border-[#E0E5EA] h-0 relative">
+        {/* menu */}
+        {menu && (
+          <div className="absolute right-0 top-[-14px] w-[100px] bg-white rounded-[4px] border-[1px] border-[#E0E5EA] flex flex-col">
+            <span
+              className="w-full px-[12px] h-[38px] flex items-center text-[14px] font-semibold"
+              onClick={(event) => onUpdateClicked(event)}
+            >
+              Modifica
+            </span>
+            <span
+              className="w-full px-[12px] h-[38px] flex items-center text-[14px] font-semibold"
+              onClick={(event) => onDeleteClicked(event)}
+            >
+              Elimina
+            </span>
+          </div>
+        )}
+      </div>
 
       {/* boody */}
       <div className="w-full flex justify-between items-center">

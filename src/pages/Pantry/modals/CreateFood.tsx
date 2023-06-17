@@ -6,8 +6,10 @@ import axios from "axios";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "../../../components/atoms/Button/Button";
 import { IconButton } from "../../../components/molecules/IconButton/IconButton";
+import { Food } from "../../../model/model";
 
 type CreateFoodProps = {
+  food?: Food;
   onClose: (type: "success" | "close" | "error") => void;
 };
 type Form = {

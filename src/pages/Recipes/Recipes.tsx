@@ -47,13 +47,9 @@ export const Recipes = () => {
 
   return (
     <>
-      <PageWithNavigation>
-        <Space type="simple" direction="y" value={14} />
-        {/* header */}
-        <div className="w-full flex justify-between items-end">
-          <span className="font-bold text-[38px] text-[#3E4954] leading-[38px]">
-            RICETTE
-          </span>
+      <PageWithNavigation
+        title="RICETTE"
+        action={
           <IconButton
             variant="fill"
             icon={<PlusIcon />}
@@ -61,7 +57,8 @@ export const Recipes = () => {
           >
             Crea
           </IconButton>
-        </div>
+        }
+      >
         {/* content */}
         <Space type="simple" direction="y" value={28} />
 

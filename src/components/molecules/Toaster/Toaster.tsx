@@ -30,7 +30,7 @@ export const Toaster: FC<ToasterProps> = ({
   }, []);
 
   useEffect(() => {
-    const timeout_ids: number[] = [];
+    const timeout_ids: NodeJS.Timeout[] = [];
     if (start) {
       // complete after time
       timeout_ids.push(
@@ -64,7 +64,7 @@ export const Toaster: FC<ToasterProps> = ({
         transform: `translateY(-${index * (10 - index)}px)`,
         scale: `${1 - index / 50}`,
         transition: "bottom 200ms ease-in-out, scale 300ms ease-in-out",
-        bottom: animate ? "76px" : "-100px",
+        bottom: animate ? "100px" : "-100px",
       }}
     >
       <div className="w-full flex justify-between items-center">

@@ -4,14 +4,29 @@ import { CookieIcon } from "../../../assets/icons/CookieIcon";
 import { ParcelIcon } from "../../../assets/icons/ParcelIcon";
 import classNames from "classnames";
 import { TestIcon } from "../../../assets/icons/TestIcon";
+import { PlanningIcon } from "../../../assets/icons/PlanningIcon";
 
 export const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // fixed bottom-0
   return (
     <>
-      <div className="w-full h-[68px] border-t-[1px] border-[#E0E5EA] fixed bottom-0 flex justify-between items-center pl-[40px] pr-[40px]">
+      <div
+        className="w-full h-[68px] border-t-[1px] border-[#E0E5EA] flex justify-between items-center pl-[40px] pr-[40px] shrink-0"
+        style={{ height: "88px", paddingBottom: "20px" }}
+      >
+        {/* planning */}
+        <PlanningIcon
+          onClick={() => navigate("/planning")}
+          className={classNames(
+            location.pathname === "/planning"
+              ? "text-[#0099FF]"
+              : "text-[#A1A1A7]"
+          )}
+        />
+
         {/* pantry */}
         <ParcelIcon
           onClick={() => navigate("/pantry")}

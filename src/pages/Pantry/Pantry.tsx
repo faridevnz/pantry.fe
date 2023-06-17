@@ -10,18 +10,23 @@ import { IngredientCardSkeleton } from "../../components/IngredientCard/skeleton
 import { useSearchParams } from "react-router-dom";
 import { BarcodeScanner } from "../../components/BarcodeScanner/BarcodeScanner";
 import { Food } from "../../model/model";
-import { APIGetFoods } from "../../api/food/food.api";
+import { APIDeleteFood, APIGetFoods } from "../../api/food/food.api";
 import { Button } from "../../components/atoms/Button/Button";
 import { IconButton } from "../../components/molecules/IconButton/IconButton";
+import { useToaster } from "../../hooks/Toaster/Toaster";
 
 export const Pantry = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [foods, setFoods] = useState<Food[]>();
   const [categories, setCategories] = useState<string[]>([]);
+  const [currentFood, setCurrentFood] = useState<Food>();
   const [mode, setMode] = useState<"CREATE" | "LIST" | "UPDATE" | "SCANNING">(
     "LIST"
   );
   const [_, setSearchParams] = useSearchParams();
+
+  // controllers
+  const toaster = useToaster();
 
   const onScannCode = (code: string) => {
     // fetch nutritional data
@@ -49,6 +54,23 @@ export const Pantry = () => {
     });
   };
 
+  const onDeleteFood = async (food: Food) => {
+    APIDeleteFood(food.id)
+      .then(() => {
+        fetchFood();
+      })
+      .catch(() => {
+        toaster.start({
+          type: "error",
+          message: `Error deleting food`,
+          subject: {
+            icon: food.icon,
+            text: food.name,
+          },
+        });
+      });
+  };
+
   useEffect(() => {
     fetchFood();
   }, []);
@@ -70,13 +92,9 @@ export const Pantry = () => {
 
   return (
     <>
-      <PageWithNavigation>
-        <Space type="simple" direction="y" value={14} />
-        {/* header */}
-        <div className="w-full flex justify-between items-end">
-          <span className="font-bold text-[38px] text-[#3E4954] leading-[38px]">
-            CIBO
-          </span>
+      <PageWithNavigation
+        title="CIBO"
+        action={
           <div className="flex gap-[6px]">
             <Button variant="fill" onClick={() => setMode("SCANNING")}>
               Scann
@@ -89,7 +107,8 @@ export const Pantry = () => {
               Crea
             </IconButton>
           </div>
-        </div>
+        }
+      >
         {/* content */}
         <Space type="simple" direction="y" value={28} />
 
@@ -101,11 +120,16 @@ export const Pantry = () => {
               ?.filter((food) => food.category === category)
               .map((food, index) => (
                 <IngredientCard
+                  key={index}
                   name={food.name}
                   icon={food.icon}
                   expiration={new Date(food.expiration)}
                   quantity={food.quantity}
-                  key={index}
+                  onDelete={() => onDeleteFood(food)}
+                  onUpdate={() => {
+                    setCurrentFood(food);
+                    setMode("UPDATE");
+                  }}
                 />
               ))}
           </Section>
@@ -118,6 +142,14 @@ export const Pantry = () => {
           onClose={(type: "success" | "close" | "error") => {
             onClose(type);
           }}
+        />
+      </ModalController>
+      <ModalController open={mode === "UPDATE"}>
+        <CreateFood
+          onClose={(type: "success" | "close" | "error") => {
+            onClose(type);
+          }}
+          food={currentFood}
         />
       </ModalController>
       <ModalController

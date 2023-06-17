@@ -8,7 +8,7 @@ export const SplashScreen = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const ids: number[] = [];
+    const ids: NodeJS.Timeout[] = [];
     ids.push(
       setTimeout(() => {
         setProgress(20);
