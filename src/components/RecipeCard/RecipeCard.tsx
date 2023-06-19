@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { MenuIcon } from "../../assets/icons/MenuIcon";
 import { CartIcon } from "../../assets/icons/CartIcon";
 import { ClockIcon } from "../../assets/icons/ClockIcon";
@@ -25,9 +25,16 @@ export type RecipeCardProps = {
       count: number;
     };
   };
+  // callbacks
+  onDelete: () => void;
+  // onUpdate: () => void;
 };
 
 export const RecipeCard: FC<RecipeCardProps> = (props) => {
+  //
+
+  const [menu, setMenu] = useState<boolean>(false);
+
   const difficultyColor = (difficulty: Recipe["difficulty"]) => {
     // compute color
     if (difficulty === "D") {
@@ -38,6 +45,29 @@ export const RecipeCard: FC<RecipeCardProps> = (props) => {
     }
     return "#88F200"; // yellow-green
   };
+
+  const onOpenMenu = (
+    event: React.MouseEvent<HTMLOrSVGElement, MouseEvent>
+  ) => {
+    event.stopPropagation();
+    setMenu(true);
+  };
+
+  const onDeleteClicked = (
+    event: React.MouseEvent<HTMLSpanElement, MouseEvent>
+  ) => {
+    event.stopPropagation();
+    setMenu(false);
+    props.onDelete();
+  };
+
+  // const onUpdateClicked = (
+  //   event: React.MouseEvent<HTMLSpanElement, MouseEvent>
+  // ) => {
+  //   event.stopPropagation();
+  //   setMenu(false);
+  //   props.onUpdate();
+  // };
 
   return (
     <div className="flex flex-col gap-[15px] p-[16px] justify-start items-center bg-white rounded-[10px] border-[1px] border-[#E0E5EA]">
@@ -52,7 +82,7 @@ export const RecipeCard: FC<RecipeCardProps> = (props) => {
             </span>
           </div>
           {/* right */}
-          <MenuIcon />
+          <MenuIcon onClick={onOpenMenu} />
         </div>
         <span className="font-medium text-[12px] text-[#3E4954]">
           {props.description}
@@ -60,7 +90,19 @@ export const RecipeCard: FC<RecipeCardProps> = (props) => {
       </div>
 
       {/* separator */}
-      <div className="w-full border-t-[1px] border-[#E0E5EA] h-0"></div>
+      <div className="w-full border-t-[1px] border-[#E0E5EA] h-0 relative">
+        {/* menu */}
+        {menu && (
+          <div className="absolute right-0 top-[-14px] w-[100px] bg-white rounded-[4px] border-[1px] border-[#E0E5EA] flex flex-col">
+            <span
+              className="w-full px-[12px] h-[38px] flex items-center text-[14px] font-semibold"
+              onClick={(event) => onDeleteClicked(event)}
+            >
+              Elimina
+            </span>
+          </div>
+        )}
+      </div>
 
       {/* boody */}
 

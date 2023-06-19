@@ -6,13 +6,17 @@ import { RecipeCard } from "../../components/RecipeCard/RecipeCard";
 import { ModalController } from "../../layouts/ModalController/ModalController";
 import { CreateRecipe } from "./modals/CreateRecipe";
 import { Recipe } from "../../model/model";
-import { APIGetRecipes } from "../../api/recipe/recipe.api";
+import { APIDeleteRecipe, APIGetRecipes } from "../../api/recipe/recipe.api";
 import { IconButton } from "../../components/molecules/IconButton/IconButton";
+import { useToaster } from "../../hooks/Toaster/Toaster";
 
 export const Recipes = () => {
   const [recipes, setRecipes] = useState<Recipe[]>();
   const [mode, setMode] = useState<"CREATE" | "LIST" | "UPDATE">("LIST");
   const [categories, setCategories] = useState<string[]>([]);
+
+  // controllers
+  const toaster = useToaster();
 
   useEffect(() => {
     recipes?.forEach((recipe) => {
@@ -43,6 +47,35 @@ export const Recipes = () => {
     if (type === "success") fetchRecipes();
     // close modal
     setMode("LIST");
+  };
+
+  const onDeleteRecipe = (recipe: Recipe) => {
+    // fetch
+    APIDeleteRecipe(recipe.id)
+      .then(
+        () => {
+          // success toaster
+          toaster.start({
+            type: "success",
+            message: "ricetta eliminata correttamente",
+            subject: {
+              icon: "👍",
+              text: `${recipe.name}`,
+            },
+          });
+          // refetch
+          fetchRecipes();
+        }
+        // fetch api
+      )
+      .catch(() =>
+        // error toaster
+        toaster.start({
+          type: "error",
+          message: "errore durante la cancellazione della ricetta",
+          subject: { icon: "❗️", text: `${recipe.name}` },
+        })
+      );
   };
 
   return (
@@ -76,6 +109,7 @@ export const Recipes = () => {
                   food={recipe.food}
                   nutritional_values={recipe.nutritional_values}
                   time={recipe.time}
+                  onDelete={() => onDeleteRecipe(recipe)}
                 />
               ))}
           </Section>
