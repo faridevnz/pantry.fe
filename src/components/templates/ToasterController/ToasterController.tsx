@@ -14,6 +14,7 @@ export const ToasterController = () => {
         <Toaster
           key={_.id}
           index={index}
+          type={_.type}
           time={3000}
           start={index === 0}
           message={_.message}

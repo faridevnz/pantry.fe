@@ -12,7 +12,7 @@ export const $toaster = new Subject<{
 }>();
 
 // types
-export type ToasterType = "success" | "error" | "info";
+export type ToasterType = "success" | "error" | "info" | "async";
 export type Toaster = {
   id: string;
   type: ToasterType;
@@ -33,8 +33,9 @@ export const ToasterContext = createContext<{
       text: string;
     };
     message: string;
-  }) => void;
+  }) => string;
   remove: (id: string) => void;
+  update: (params: { id: string; outcome: "success" | "error" }) => void;
   toasters: Toaster[];
 }>({ toasters: [] } as any);
 
@@ -59,6 +60,19 @@ export const ToasterProvider: FC<{ children: ReactNode }> = ({ children }) => {
     return () => sub.unsubscribe();
   }, []);
 
+  const onUpdateToaster = (params: {
+    id: string;
+    outcome: "success" | "error";
+  }) => {
+    setToasters((prev) => {
+      return [
+        ...prev.map((t: Toaster) => {
+          return t.id === params.id ? { ...t, type: params.outcome } : t;
+        }),
+      ];
+    });
+  };
+
   const onAddToaster = (params: {
     type: ToasterType;
     subject: {
@@ -67,11 +81,14 @@ export const ToasterProvider: FC<{ children: ReactNode }> = ({ children }) => {
     };
     message: string;
   }) => {
+    // generate random id
+    const id = String(Math.random() * 100000);
+    // set toaster
     setToasters((prev) => {
       return [
         ...prev,
         {
-          id: String(Math.random() * 1000),
+          id,
           subject: {
             icon: params.subject.icon,
             text: params.subject.text,
@@ -82,6 +99,8 @@ export const ToasterProvider: FC<{ children: ReactNode }> = ({ children }) => {
         },
       ];
     });
+    // return the generated id
+    return id;
   };
 
   const onRemoveToaster = (id: string) => {
@@ -93,7 +112,12 @@ export const ToasterProvider: FC<{ children: ReactNode }> = ({ children }) => {
   // render
   return (
     <ToasterContext.Provider
-      value={{ add: onAddToaster, remove: onRemoveToaster, toasters }}
+      value={{
+        add: onAddToaster,
+        remove: onRemoveToaster,
+        toasters,
+        update: onUpdateToaster,
+      }}
     >
       {children}
     </ToasterContext.Provider>

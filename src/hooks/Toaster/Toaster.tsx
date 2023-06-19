@@ -3,7 +3,11 @@ import { Toaster, ToasterContext } from "../../context/Toaster/ToasterContext";
 
 export const useToaster = () => {
   //
-  const { add } = useContext(ToasterContext);
+  const { add, update } = useContext(ToasterContext);
+
+  const complete = (params: { id: string; outcome: "success" | "error" }) => {
+    update({ id: params.id, outcome: params.outcome });
+  };
 
   const start = (params: {
     type: Toaster["type"];
@@ -11,11 +15,13 @@ export const useToaster = () => {
     subject: Toaster["subject"];
   }) => {
     // add toaster
-    add({
+    const id = add({
       message: params.message,
       type: params.type,
       subject: params.subject,
     });
+    // return 'complete' callback to complete manually
+    return { complete, id };
   };
 
   // return

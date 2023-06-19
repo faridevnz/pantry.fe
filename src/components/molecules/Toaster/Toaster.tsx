@@ -1,7 +1,10 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
+import { Toaster as ToasterType } from "../../../context/Toaster/ToasterContext";
+import classNames from "classnames";
 
 export type ToasterProps = {
   index: number;
+  type: ToasterType["type"];
   start: boolean;
   time: number;
   message: string;
@@ -9,21 +12,28 @@ export type ToasterProps = {
     icon: string;
     text: string;
   };
+  // callbacks
   onComplete: () => void;
 };
 
 export const Toaster: FC<ToasterProps> = ({
   index,
+  type,
   start,
   time,
   message,
   subject,
+  // callbacks
   onComplete,
 }) => {
   //
 
   const [percentage, setPercentage] = useState<number>(0);
+  const [outcome, setOutcome] = useState<typeof type>(type);
   const [animate, setAnimate] = useState<boolean>(false);
+  const delayed = useRef<boolean>(false);
+
+  // effects
 
   useEffect(() => {
     setAnimate(true);
@@ -35,12 +45,9 @@ export const Toaster: FC<ToasterProps> = ({
       // complete after time
       timeout_ids.push(
         setTimeout(() => {
-          timeout_ids.push(
-            setTimeout(() => {
-              onComplete();
-            }, 200)
-          );
-          setAnimate(false);
+          // check to close or await for complete
+          if (outcome !== "async") timeout_ids.push(complete());
+          else delayed.current = true;
         }, time)
       );
       // if index is 0 -> run
@@ -51,11 +58,48 @@ export const Toaster: FC<ToasterProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [start]);
 
+  useEffect(() => {
+    const timeout_ids: NodeJS.Timeout[] = [];
+    if (["success", "error"].includes(type) && start) {
+      setOutcome(type);
+      timeout_ids.push(
+        setTimeout(
+          () => {
+            complete();
+          },
+          delayed.current ? 500 : time
+        )
+      );
+    }
+    // return
+    return () => timeout_ids.forEach((t_id) => clearTimeout(t_id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type, start]);
+
+  // functions
+
+  const complete = (): NodeJS.Timeout => {
+    setAnimate(false);
+    return setTimeout(() => {
+      onComplete();
+    }, 200);
+  };
+
   const run = () => {
     setPercentage(96);
   };
 
   // render
+  const loaderStyle: {
+    [k in typeof type]: string;
+  } = {
+    async:
+      "bg-[#EAEAEA] border-[2px] border-b-[#0099FF] border-r-[#0099FF] border-t-[#0099FF] animate-spin",
+    success: "border-[3px] border-[#10C700]",
+    error: "border-[3px] border-[#F25700]",
+    info: "hidden",
+  };
+
   return (
     <div
       className="fixed bottom-[-100px] left-[10px] right-[10px] rounded-[10px] border-[2px] border-[#e5e7eb] bg-white flex flex-col gap-[2px] items-center p-[20px]"
@@ -78,7 +122,12 @@ export const Toaster: FC<ToasterProps> = ({
           </span>
         </div>
         {/* loader */}
-        <div className="w-[16px] h-[16px] bg-[#EAEAEA] rounded-full border-[2px] border-b-[#0099FF] border-r-[#0099FF] border-t-[#0099FF] animate-spin"></div>
+        <div
+          className={classNames(
+            "w-[16px] h-[16px] rounded-full transition-all duration-200 delay-500",
+            loaderStyle[outcome]
+          )}
+        ></div>
       </div>
       <div className="w-full flex items-center">
         <span className="text-[12px] text-[#3E4954] font-medium">

@@ -52,12 +52,9 @@ export const CreateFood: FC<CreateFoodProps> = ({ onClose }) => {
   });
 
   useEffect(() => {
-    update("proteins", String(Math.floor(Number(searchParams.get("p") ?? ""))));
-    update(
-      "carbohydrates",
-      String(Math.floor(Number(searchParams.get("c") ?? "")))
-    );
-    update("fats", String(Math.floor(Number(searchParams.get("f") ?? ""))));
+    update("proteins", String(Number(searchParams.get("p") ?? "")));
+    update("carbohydrates", String(Number(searchParams.get("c") ?? "")));
+    update("fats", String(Number(searchParams.get("f") ?? "")));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 

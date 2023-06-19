@@ -55,19 +55,21 @@ export const Pantry = () => {
   };
 
   const onDeleteFood = async (food: Food) => {
+    // toaster
+    const { complete, id } = toaster.start({
+      type: "async",
+      message: "Cancellazione in corso ...",
+      subject: { icon: food.icon, text: food.name },
+    });
+    // call
     APIDeleteFood(food.id)
       .then(() => {
         fetchFood();
+        complete({ id, outcome: "success" });
       })
       .catch(() => {
-        toaster.start({
-          type: "error",
-          message: `Error deleting food`,
-          subject: {
-            icon: food.icon,
-            text: food.name,
-          },
-        });
+        //
+        complete({ id, outcome: "error" });
       });
   };
 
